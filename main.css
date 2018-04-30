@@ -1,0 +1,16 @@
+#map {
+    height: 100%;
+    width: 100%;
+    background-color: inherit;
+    border-radius: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(219, 219, 219);
+}
+
+.circle {
+    border-radius: 50%;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(219, 219, 219);
+}
