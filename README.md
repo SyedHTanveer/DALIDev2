@@ -1,5 +1,5 @@
 # <center> Syed Tanveer - Dev 2 Challenge
-<center>[This link leads to the deployed App!](http://syeds-dali-project.surge.sh/)
+[This link leads to the deployed App!](http://syeds-dali-project.surge.sh/)
 
 ### About this Project
 
