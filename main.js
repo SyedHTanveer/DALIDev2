@@ -1,8 +1,25 @@
-var mymap = L.map('map').setView([37, -95],2.5);
+var mymap = L.map('map').setView([37, -95],3);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		id: 'mapbox.streets'
+		id: 'mapbox.streets',
+		maxZoom: 15,
+		minZoom: 3
 	}).addTo(mymap);
+
+var faceImage = L.layerGroup();
+
+var thisIcon = L.Icon.extend({
+    options: {
+        className: 'circle',
+        iconSize: [45, 45]
+    }
+});
+
+var filterButton = L.control.tagFilterButton({
+    data: ['17W', '17S', 'clear'],
+    icon: '<img src="filter.png" style="width:100%;height:100%;">',
+    filterOnEveryClick: 'true'
+}).addTo(mymap);
 
 function readTextFile(file, callback) {
     var rawFile = new XMLHttpRequest();
@@ -16,19 +33,7 @@ function readTextFile(file, callback) {
     rawFile.send(null);
 }
 
-var facemarkers = L.layerGroup();
-
-var thisIcon = L.Icon.extend({
-    options: {
-        className: 'circle',
-        iconSize: [45, 45]
-    }
-});
-
-
-//load and process members
 readTextFile("http://mappy.dali.dartmouth.edu/members.json", function(response){
-  // Parse JSON string into object
   var members = JSON.parse(response);
   Object.keys(members).forEach(function(member) {
     addMarker(members[member]);
@@ -36,37 +41,26 @@ readTextFile("http://mappy.dali.dartmouth.edu/members.json", function(response){
 });
 
 
-// function to add markers
-var addMarker = function(options) {
+var addMarker = function(member) {
 
   var icon = new thisIcon(
-          {iconUrl: 'http://mappy.dali.dartmouth.edu/' + options.iconUrl
+          {iconUrl: 'http://mappy.dali.dartmouth.edu/' + member.iconUrl
           });
 
-  var marker = L.marker(options.lat_long, {
+  var marker = L.marker(member.lat_long, {
           icon: icon,
-          url: options.url,
-          name: options.name,
-          tags: options.terms_on
+          url: member.url,
+          name: member.name,
+          tags: member.terms_on
 });
+
 	//console.log("this is working");
-  facemarkers.addLayer(marker.bindPopup(options.name + ": " + options.message).addTo(mymap));
+  faceImage.addLayer(marker.bindPopup(member.name + ": " + member.message + ". </br><center> Terms on: " + member.terms_on + "</center").addTo(mymap).on('mouseover', function(e) {
+	  marker.openPopup();
+  }).on('mouseout', function(e) {
+	  marker.closePopup();
+  }).on('click dblclick', function(e) {
+	  window.open(member.url, member.name);
+    })
+ )
 };
-
-facemarkers.eachLayer(function(marker) {
-
-        marker.on('mouseover', function (e) {
-		console.log("helloworld");
-		e.openPopup();
-	});
-
-        marker.on('mouseout', function (e) {
-		console.log("helloworld");
-		e.closePopup();
-	});
-
-        marker.on('click', function (e) {
-		console.log("helloworld");
-                window.open(e.target.options.url, e.target.options.name);
-  });
-});
